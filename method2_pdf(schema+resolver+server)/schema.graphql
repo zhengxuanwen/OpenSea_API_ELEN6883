@@ -1,15 +1,25 @@
 type Query {
-  assetById(contractAddress: String!, tokenId: ID!): Asset
+  assetById(contractAddress: String!, tokenId: String!): Asset
 }
 
 type Asset {
-  tokenId: ID!
+  tokenId: String!
   tokenURI: String!
   owner: String!
   contractAddress: String!
   name: String!
   symbol: String!
   creator: String
+  transactions: [Transaction!]!
 }
 
+type Transaction {
+  id: String!
+  from: String!
+  to: String!
+  transactionHash: String!
+}
 
+schema {
+  query: Query
+}

@@ -33,6 +33,10 @@ const resolvers = {
       const creator = await findCreator(contractInstance, asset.tokenId);
       return creator;
     },
+    transactions: async (asset) => {
+      const transactions = await fetchTransferEvents(asset.contractAddress, asset.tokenId);
+      return transactions;
+    }
   },
 };
 
@@ -51,5 +55,25 @@ async function findCreator(contractInstance, tokenId) {
   return creationEvent ? creationEvent.returnValues.to : null;
 }
 
+async function fetchTransferEvents(contractAddress, tokenId) {
+  try {
+    const contract = new web3.eth.Contract(ERC721_ABI, contractAddress);
+    const transferEvents = await contract.getPastEvents('Transfer', {
+      filter: { tokenId: tokenId },
+      fromBlock: 0,
+      toBlock: 'latest',
+    });
+
+    return transferEvents.map((event) => ({
+      id: event.id,
+      from: event.returnValues.from,
+      to: event.returnValues.to,
+      transactionHash: event.transactionHash,
+    }));
+  } catch (error) {
+    console.error('Error fetching transfer events:', error);
+    return [];
+  }
+}
 
 module.exports = resolvers;
