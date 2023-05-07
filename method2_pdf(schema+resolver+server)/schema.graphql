@@ -1,0 +1,15 @@
+type Query {
+  assetById(contractAddress: String!, tokenId: ID!): Asset
+}
+
+type Asset {
+  tokenId: ID!
+  tokenURI: String!
+  owner: String!
+  contractAddress: String!
+  name: String!
+  symbol: String!
+  creator: String
+}
+
+
