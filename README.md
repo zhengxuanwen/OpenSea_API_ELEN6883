@@ -1,2 +1,11 @@
 # OpenSea_API_ELEN6883
-Make sure you have Node js install properly in your environment and cd to taget method file, then type "node server.js" in Node.js Command prompt
+
+Team members:
+
+Xingen Chen (xc2641)
+
+Zhengxuan Wen (zw2851)
+
+Bo Yu (by2345)
+
+Fangzheng Wu (fw2396)
