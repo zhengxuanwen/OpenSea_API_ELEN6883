@@ -2,13 +2,13 @@
 
 Team members:
 
-Xingen Chen (xc2641)
+Xingen Chen (xc2641@columbia.edu)
 
-Zhengxuan Wen (zw2851)
+Zhengxuan Wen (zw2851@columbia.edu)
 
-Bo Yu (by2345)
+Bo Yu (by2345@columbia.edu)
 
-Fangzheng Wu (fw2396)
+Fangzheng Wu (fw2396@columbia.edu)
 
 ------------------------------------------------------------------------------------
 
