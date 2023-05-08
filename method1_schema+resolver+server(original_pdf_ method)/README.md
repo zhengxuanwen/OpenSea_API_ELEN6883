@@ -1,1 +1,1 @@
-Make sure you have Node.js install properly in your environment and cd to taget folder, then type "node server.js" in Node.js Command prompt.
+Ensure that all required libraries are correctly installed in your environment and navigate to the target folder. To start the server, enter "node server.js" in the command line.
