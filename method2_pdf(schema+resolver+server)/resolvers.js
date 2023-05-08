@@ -11,6 +11,7 @@ const resolvers = {
       const owner = await contractInstance.methods.ownerOf(tokenId).call();
       const name = await contractInstance.methods.name().call();
       const symbol = await contractInstance.methods.symbol().call();
+      const approvedAddress = await contractInstance.methods.getApproved(tokenId).call();
 
       return {
         tokenId: tokenId,
@@ -19,6 +20,7 @@ const resolvers = {
         contractAddress: contractAddress,
         name: name,
         symbol: symbol,
+        approvedAddress: approvedAddress,
       };
     },
   },
@@ -36,7 +38,20 @@ const resolvers = {
     transactions: async (asset) => {
       const transactions = await fetchTransferEvents(asset.contractAddress, asset.tokenId);
       return transactions;
-    }
+    },
+    metadata: async (asset) => {
+      const metadata = await fetchMetadata(asset.tokenURI);
+      return metadata;
+    },
+    ownerBalance: async (asset) => {
+      const contractInstance = new web3.eth.Contract(ERC721_ABI, asset.contractAddress);
+      const balance = await contractInstance.methods.balanceOf(asset.owner).call();
+      return parseInt(balance);
+    },
+    topTokenHolders: async (asset, { limit }) => {
+      const topHolders = await fetchTopTokenHolders(asset.contractAddress, limit);
+      return topHolders;
+    },
   },
 };
 
@@ -76,4 +91,55 @@ async function fetchTransferEvents(contractAddress, tokenId) {
   }
 }
 
+async function fetchMetadata(tokenURI) {
+  try {
+    const response = await fetch(tokenURI);
+    const metadata = await response.json();
+    return metadata;
+  } catch (error) {
+    console.error('Error fetching metadata:', error);
+    return null;
+  }
+}
+async function fetchTopTokenHolders(contractAddress, limit) {
+  try {
+    // Fetch all Transfer events and process them to get a map of address to token count
+    const contractInstance = new web3.eth.Contract(ERC721_ABI, contractAddress);
+    const transferEvents = await contractInstance.getPastEvents('Transfer', {
+      fromBlock: 0,
+      toBlock: 'latest',
+    });
+
+    const tokenHolders = transferEvents.reduce((acc, event) => {
+      const from = event.returnValues.from;
+      const to = event.returnValues.to;
+
+      if (from !== '0x0000000000000000000000000000000000000000') {
+        acc[from] = (acc[from] || 0) - 1;
+      }
+
+      acc[to] = (acc[to] || 0) + 1;
+
+      return acc;
+    }, {});
+
+    // Sort addresses by token count and slice to get the top N holders
+    const sortedHolders = Object.entries(tokenHolders)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit);
+
+    // Convert sorted holders to an array of objects with address and tokenCount properties
+    const topHolders = sortedHolders.map(([address, tokenCount]) => ({
+      address,
+      tokenCount,
+    }));
+
+    return topHolders;
+  } catch (error) {
+    console.error('Error fetching top token holders:', error);
+    return [];
+  }
+}
+
 module.exports = resolvers;
+

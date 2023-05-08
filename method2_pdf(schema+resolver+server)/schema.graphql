@@ -9,8 +9,12 @@ type Asset {
   contractAddress: String!
   name: String!
   symbol: String!
+  approvedAddress: String
   creator: String
   transactions: [Transaction!]!
+  metadata: Metadata
+  ownerBalance: Int!
+  topTokenHolders(limit: Int!): [TokenHolder!]!
 }
 
 type Transaction {
@@ -18,6 +22,17 @@ type Transaction {
   from: String!
   to: String!
   transactionHash: String!
+}
+
+type Metadata {
+  name: String
+  description: String
+  image: String
+}
+
+type TokenHolder {
+  address: String!
+  tokenCount: Int!
 }
 
 schema {
